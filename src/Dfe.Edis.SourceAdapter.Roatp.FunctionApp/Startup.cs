@@ -1,6 +1,9 @@
 using System.IO;
+using Dfe.Edis.SourceAdapter.Roatp.Application;
 using Dfe.Edis.SourceAdapter.Roatp.Domain.Configuration;
+using Dfe.Edis.SourceAdapter.Roatp.Domain.Roatp;
 using Dfe.Edis.SourceAdapter.Roatp.FunctionApp;
+using Dfe.Edis.SourceAdapter.Roatp.Infrastructure.RoatpWebsite;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +29,13 @@ namespace Dfe.Edis.SourceAdapter.Roatp.FunctionApp
 
             AddConfiguration(services, configurationRoot);
             AddLogging(services);
+
+            services.AddHttpClient();
+            services.AddHttpClient<RoatpWebsiteDataSource>();
+
+            services
+                .AddScoped<IRoatpDataSource, RoatpWebsiteDataSource>()
+                .AddScoped<IChangeProcessor, ChangeProcessor>();
         }
 
 
@@ -38,6 +48,7 @@ namespace Dfe.Edis.SourceAdapter.Roatp.FunctionApp
             services.AddSingleton(configurationRoot);
 
             services.AddSingleton(configuration);
+            services.AddSingleton(configuration.SourceData);
         }
 
         private void AddLogging(IServiceCollection services)

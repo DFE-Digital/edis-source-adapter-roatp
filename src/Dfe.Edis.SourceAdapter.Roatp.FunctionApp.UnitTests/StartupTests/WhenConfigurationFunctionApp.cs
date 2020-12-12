@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
@@ -26,16 +27,22 @@ namespace Dfe.Edis.SourceAdapter.Roatp.FunctionApp.UnitTests.StartupTests
                 builder.Services.AddScoped(function);
             }
 
+            // For some reason the AddHttpClient extensions not resolving under test. Adding this to work around until can figure it out
+            builder.Services.AddScoped<HttpClient>(sp => new HttpClient());
+
             var provider = builder.Services.BuildServiceProvider();
 
             foreach (var function in functions)
             {
                 try
                 {
-                    var resolvedFunction = provider.GetService(function);
-                    if (resolvedFunction == null)
+                    using (provider.CreateScope())
                     {
-                        throw new NullReferenceException("Function resolved to null");
+                        var resolvedFunction = provider.GetService(function);
+                        if (resolvedFunction == null)
+                        {
+                            throw new NullReferenceException("Function resolved to null");
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -52,6 +59,7 @@ namespace Dfe.Edis.SourceAdapter.Roatp.FunctionApp.UnitTests.StartupTests
                 .AddInMemoryCollection(new[]
                 {
                     new KeyValuePair<string, string>("Sync:QueueConnectionString", "UseDevelopmentStorage=true"),
+                    new KeyValuePair<string, string>("SourceData:RoatpDownloadPageUrl", "https://roatp.website.url/place"),
                 }).Build();
         }
 

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Dfe.Edis.SourceAdapter.Roatp.Domain.Configuration;
+using Dfe.Edis.SourceAdapter.Roatp.Domain.StateManagement;
 using Microsoft.Extensions.Logging;
 using MockTheWeb;
 using Moq;
@@ -15,6 +16,7 @@ namespace Dfe.Edis.SourceAdapter.Roatp.Infrastructure.RoatpWebsite.UnitTests.Roa
     public class WhenGettingData
     {
         private HttpClientMock _httpClientMock;
+        private Mock<IStateStore> _stateStoreMock;
         private SourceDataConfiguration _configuration;
         private Uri _absoluteDownloadUri;
         private Mock<ILogger<RoatpWebsiteDataSource>> _loggerMock;
@@ -49,11 +51,14 @@ namespace Dfe.Edis.SourceAdapter.Roatp.Infrastructure.RoatpWebsite.UnitTests.Roa
                         "10001001,Provider One,Main provider,False,False,10/12/2020,,30/07/2020\n" + 
                         "10001002,Provider One,Main provider,False,False,13/03/2017,,28/08/2019")
                 });
+
+            _stateStoreMock = new Mock<IStateStore>();
             
             _loggerMock = new Mock<ILogger<RoatpWebsiteDataSource>>();
             
             _dataSource = new RoatpWebsiteDataSource(
                 _httpClientMock.AsHttpClient(),
+                _stateStoreMock.Object,
                 _configuration,
                 _loggerMock.Object);
         }

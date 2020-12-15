@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dfe.Edis.SourceAdapter.Roatp.Domain.Configuration;
 using Dfe.Edis.SourceAdapter.Roatp.Domain.Roatp;
+using Dfe.Edis.SourceAdapter.Roatp.Domain.StateManagement;
 using Dfe.Edis.SourceAdapter.Roatp.Infrastructure.RoatpWebsite.Csv;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
@@ -15,16 +16,21 @@ namespace Dfe.Edis.SourceAdapter.Roatp.Infrastructure.RoatpWebsite
 {
     public class RoatpWebsiteDataSource : IRoatpDataSource
     {
+        private const string StateKeyDownloadLink = "website-download-link";
+        
         private readonly HttpClient _httpClient;
+        private readonly IStateStore _stateStore;
         private readonly SourceDataConfiguration _configuration;
         private readonly ILogger<RoatpWebsiteDataSource> _logger;
 
         public RoatpWebsiteDataSource(
             HttpClient httpClient,
+            IStateStore stateStore,
             SourceDataConfiguration configuration,
             ILogger<RoatpWebsiteDataSource> logger)
         {
             _httpClient = httpClient;
+            _stateStore = stateStore;
             _configuration = configuration;
             _logger = logger;
         }
@@ -32,11 +38,19 @@ namespace Dfe.Edis.SourceAdapter.Roatp.Infrastructure.RoatpWebsite
         public async Task<ApprenticeshipProvider[]> GetDataAsync(CancellationToken cancellationToken)
         {
             var downloadLink = await GetDownloadLinkAsync(cancellationToken);
-            // TODO: Check if file has changed.
+            var isNewDownloadLink = await IsNewDownloadLink(downloadLink, cancellationToken);
+            if (!isNewDownloadLink)
+            {
+                _logger.LogInformation("Download link has not changed");
+                return new ApprenticeshipProvider[0];
+            }
             
             var csv = await DownloadCsvAsync(downloadLink, cancellationToken);
 
             var apprenticeshipProviders = ParseCsv(csv);
+
+            await _stateStore.SetStateAsync(StateKeyDownloadLink, downloadLink, cancellationToken);
+            
             return apprenticeshipProviders;
         }
 
@@ -78,6 +92,14 @@ namespace Dfe.Edis.SourceAdapter.Roatp.Infrastructure.RoatpWebsite
             }
 
             return new Uri(new Uri(_configuration.RoatpDownloadPageUrl, UriKind.Absolute), new Uri(href, UriKind.Relative)).AbsoluteUri;
+        }
+
+        private async Task<bool> IsNewDownloadLink(string downloadLink, CancellationToken cancellationToken)
+        {
+            var previousState = await _stateStore.GetStateAsync(StateKeyDownloadLink, cancellationToken);
+            
+            return string.IsNullOrEmpty(previousState) || 
+                   !previousState.Equals(downloadLink, StringComparison.InvariantCultureIgnoreCase);
         }
         
         private async Task<string> DownloadCsvAsync(string downloadLink, CancellationToken cancellationToken)

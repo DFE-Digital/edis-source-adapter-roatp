@@ -22,6 +22,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Dfe.Edis.SourceAdapter.Roatp.Application\Dfe.Edis.SourceAdapter.Roatp.Application.csproj" />
       <ProjectReference Include="..\Dfe.Edis.SourceAdapter.Roatp.Domain\Dfe.Edis.SourceAdapter.Roatp.Domain.csproj" />
+      <ProjectReference Include="..\Dfe.Edis.SourceAdapter.Roatp.Infrastructure.AzureStorage\Dfe.Edis.SourceAdapter.Roatp.Infrastructure.AzureStorage.csproj" />
       <ProjectReference Include="..\Dfe.Edis.SourceAdapter.Roatp.Infrastructure.Kafka\Dfe.Edis.SourceAdapter.Roatp.Infrastructure.Kafka.csproj" />
       <ProjectReference Include="..\Dfe.Edis.SourceAdapter.Roatp.Infrastructure.RoatpWebsite\Dfe.Edis.SourceAdapter.Roatp.Infrastructure.RoatpWebsite.csproj" />
     </ItemGroup>

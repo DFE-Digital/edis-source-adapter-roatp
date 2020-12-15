@@ -4,7 +4,9 @@ using Dfe.Edis.SourceAdapter.Roatp.Application;
 using Dfe.Edis.SourceAdapter.Roatp.Domain.Configuration;
 using Dfe.Edis.SourceAdapter.Roatp.Domain.DataServicesPlatform;
 using Dfe.Edis.SourceAdapter.Roatp.Domain.Roatp;
+using Dfe.Edis.SourceAdapter.Roatp.Domain.StateManagement;
 using Dfe.Edis.SourceAdapter.Roatp.FunctionApp;
+using Dfe.Edis.SourceAdapter.Roatp.Infrastructure.AzureStorage;
 using Dfe.Edis.SourceAdapter.Roatp.Infrastructure.Kafka;
 using Dfe.Edis.SourceAdapter.Roatp.Infrastructure.Kafka.RestProxy;
 using Dfe.Edis.SourceAdapter.Roatp.Infrastructure.RoatpWebsite;
@@ -47,6 +49,7 @@ namespace Dfe.Edis.SourceAdapter.Roatp.FunctionApp
 
             AddRoatpDataSource(services);
             AddRoatpDataReceiver(services);
+            AddState(services);
 
             services
                 .AddScoped<IChangeProcessor, ChangeProcessor>();
@@ -64,6 +67,7 @@ namespace Dfe.Edis.SourceAdapter.Roatp.FunctionApp
             services.AddSingleton(configuration);
             services.AddSingleton(configuration.SourceData);
             services.AddSingleton(configuration.DataServicePlatform);
+            services.AddSingleton(configuration.State);
         }
 
         private void AddLogging(IServiceCollection services)
@@ -81,6 +85,11 @@ namespace Dfe.Edis.SourceAdapter.Roatp.FunctionApp
         {
             services.AddHttpClient<KafkaRestProxyRoatpDataReceiver>();
             services.AddScoped<IRoatpDataReceiver, KafkaRestProxyRoatpDataReceiver>();
+        }
+
+        private void AddState(IServiceCollection services)
+        {
+            services.AddScoped<IStateStore, BlobStateStore>();
         }
     }
 }

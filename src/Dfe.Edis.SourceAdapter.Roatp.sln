@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dfe.Edis.SourceAdapter.Roat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dfe.Edis.SourceAdapter.Roatp.Infrastructure.Kafka.UnitTests", "Dfe.Edis.SourceAdapter.Roatp.Infrastructure.Kafka.UnitTests\Dfe.Edis.SourceAdapter.Roatp.Infrastructure.Kafka.UnitTests.csproj", "{51A6CCD1-311D-4BE1-982D-E5F8B86DFFE6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dfe.Edis.SourceAdapter.Roatp.Infrastructure.AzureStorage", "Dfe.Edis.SourceAdapter.Roatp.Infrastructure.AzureStorage\Dfe.Edis.SourceAdapter.Roatp.Infrastructure.AzureStorage.csproj", "{0CD69710-CDED-4CFC-837A-62DC9A5C4423}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{51A6CCD1-311D-4BE1-982D-E5F8B86DFFE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51A6CCD1-311D-4BE1-982D-E5F8B86DFFE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51A6CCD1-311D-4BE1-982D-E5F8B86DFFE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CD69710-CDED-4CFC-837A-62DC9A5C4423}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CD69710-CDED-4CFC-837A-62DC9A5C4423}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CD69710-CDED-4CFC-837A-62DC9A5C4423}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CD69710-CDED-4CFC-837A-62DC9A5C4423}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EBC18F2F-1247-428A-A74C-7B6917FAE14E} = {A9B8496E-A504-4FF0-960C-A3BFCFADB3A4}

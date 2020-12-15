@@ -64,6 +64,8 @@ namespace Dfe.Edis.SourceAdapter.Roatp.FunctionApp.UnitTests.StartupTests
                     new KeyValuePair<string, string>("DataServicePlatform:KafkaRestProxyUrl", "https://localhost:1003"),
                     new KeyValuePair<string, string>("DataServicePlatform:SchemaRegistryUrl", "https://localhost:1002"),
                     new KeyValuePair<string, string>("DataServicePlatform:RoatpProviderTopic", "test-topic"),
+                    new KeyValuePair<string, string>("State:BlobConnectionString", "UseDevelopmentStorage=true;"),
+                    new KeyValuePair<string, string>("State:BlobContainerName", "some-container"),
                 }).Build();
         }
 

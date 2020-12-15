@@ -6,6 +6,7 @@ using Dfe.Edis.SourceAdapter.Roatp.Domain.DataServicesPlatform;
 using Dfe.Edis.SourceAdapter.Roatp.Domain.Roatp;
 using Dfe.Edis.SourceAdapter.Roatp.FunctionApp;
 using Dfe.Edis.SourceAdapter.Roatp.Infrastructure.Kafka;
+using Dfe.Edis.SourceAdapter.Roatp.Infrastructure.Kafka.RestProxy;
 using Dfe.Edis.SourceAdapter.Roatp.Infrastructure.RoatpWebsite;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +16,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 [assembly: FunctionsStartup(typeof(Startup))]
+
 namespace Dfe.Edis.SourceAdapter.Roatp.FunctionApp
 {
     public class Startup : FunctionsStartup
@@ -29,6 +31,7 @@ namespace Dfe.Edis.SourceAdapter.Roatp.FunctionApp
 
             Configure(builder, rawConfiguration);
         }
+
         public void Configure(IFunctionsHostBuilder builder, IConfigurationRoot configurationRoot)
         {
             var services = builder.Services;
@@ -42,12 +45,10 @@ namespace Dfe.Edis.SourceAdapter.Roatp.FunctionApp
             AddConfiguration(services, configurationRoot);
             AddLogging(services);
 
-            services.AddHttpClient();
-            services.AddHttpClient<RoatpWebsiteDataSource>();
+            AddRoatpDataSource(services);
+            AddRoatpDataReceiver(services);
 
             services
-                .AddScoped<IRoatpDataSource, RoatpWebsiteDataSource>()
-                .AddScoped<IRoatpDataReceiver, KafkaRoatpDataReceiver>()
                 .AddScoped<IChangeProcessor, ChangeProcessor>();
         }
 
@@ -56,8 +57,8 @@ namespace Dfe.Edis.SourceAdapter.Roatp.FunctionApp
         {
             var configuration = new RootAppConfiguration();
             configurationRoot.Bind(configuration);
-            
-            
+
+
             services.AddSingleton(configurationRoot);
 
             services.AddSingleton(configuration);
@@ -67,10 +68,19 @@ namespace Dfe.Edis.SourceAdapter.Roatp.FunctionApp
 
         private void AddLogging(IServiceCollection services)
         {
-            services.AddLogging(builder =>
-            {
-                builder.SetMinimumLevel(LogLevel.Debug);
-            });
+            services.AddLogging(builder => { builder.SetMinimumLevel(LogLevel.Debug); });
+        }
+
+        private void AddRoatpDataSource(IServiceCollection services)
+        {
+            services.AddHttpClient<RoatpWebsiteDataSource>();
+            services.AddScoped<IRoatpDataSource, RoatpWebsiteDataSource>();
+        }
+
+        private void AddRoatpDataReceiver(IServiceCollection services)
+        {
+            services.AddHttpClient<KafkaRestProxyRoatpDataReceiver>();
+            services.AddScoped<IRoatpDataReceiver, KafkaRestProxyRoatpDataReceiver>();
         }
     }
 }

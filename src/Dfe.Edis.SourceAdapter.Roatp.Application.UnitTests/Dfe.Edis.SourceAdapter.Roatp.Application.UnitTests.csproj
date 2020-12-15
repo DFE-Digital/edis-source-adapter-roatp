@@ -7,16 +7,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.10" />
-        <PackageReference Include="MockTheWeb" Version="1.1.0" />
         <PackageReference Include="Moq" Version="4.15.2" />
-        <PackageReference Include="NUnit" Version="3.12.0" />
+        <PackageReference Include="nunit" Version="3.12.0" />
         <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Dfe.Edis.SourceAdapter.Roatp.Infrastructure.RoatpWebsite\Dfe.Edis.SourceAdapter.Roatp.Infrastructure.RoatpWebsite.csproj" />
+      <ProjectReference Include="..\Dfe.Edis.SourceAdapter.Roatp.Application\Dfe.Edis.SourceAdapter.Roatp.Application.csproj" />
+      <ProjectReference Include="..\Dfe.Edis.SourceAdapter.Roatp.Domain\Dfe.Edis.SourceAdapter.Roatp.Domain.csproj" />
     </ItemGroup>
 
 </Project>

@@ -60,6 +60,9 @@ namespace Dfe.Edis.SourceAdapter.Roatp.FunctionApp.UnitTests.StartupTests
                 {
                     new KeyValuePair<string, string>("Sync:QueueConnectionString", "UseDevelopmentStorage=true"),
                     new KeyValuePair<string, string>("SourceData:RoatpDownloadPageUrl", "https://roatp.website.url/place"),
+                    new KeyValuePair<string, string>("DataServicePlatform:KafkaBootstrapServers", "localhost:1001"),
+                    new KeyValuePair<string, string>("DataServicePlatform:SchemaRegistryUrl", "https://localhost:1002"),
+                    new KeyValuePair<string, string>("DataServicePlatform:RoatpProviderTopic", "test-topic"),
                 }).Build();
         }
 

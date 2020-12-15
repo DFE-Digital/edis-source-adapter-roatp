@@ -2,7 +2,6 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -10,10 +9,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="CsvHelper" Version="18.0.0" />
-      <PackageReference Include="HtmlAgilityPack" Version="1.11.28" />
+      <PackageReference Include="Confluent.Kafka" Version="1.5.3" />
+      <PackageReference Include="Confluent.SchemaRegistry.Serdes.Json" Version="1.5.3" />
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.10" />
-      <PackageReference Include="NodaTime" Version="3.0.3" />
     </ItemGroup>
 
 </Project>

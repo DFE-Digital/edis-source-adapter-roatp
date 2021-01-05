@@ -42,7 +42,7 @@
     "kafkaRestProxyUrl": {
       "type": "string"
     },
-    "kafkaUkrlpProviderTopic": {
+    "kafkaRoatpProviderTopic": {
       "type": "string"
     },
     "vNetInstance": {
@@ -239,7 +239,7 @@
             },
             {
               "Name": "SourceData__RoatpDownloadPageUrl",
-              "Value": "[parameters('ukrlpApiUrl')]"
+              "Value": "[parameters('roatpDownloadPageUrl')]"
             },
             {
               "Name": "State__BlobConnectionString",
@@ -254,8 +254,8 @@
               "Value": "[parameters('kafkaRestProxyUrl')]"
             },
             {
-              "Name": "DataServicePlatform__UkrlpProviderTopic",
-              "Value": "[parameters('kafkaUkrlpProviderTopic')]"
+              "Name": "DataServicePlatform__RoatpProviderTopic",
+              "Value": "[parameters('kafkaRoatpProviderTopic')]"
             }
           ]
         }

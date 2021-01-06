@@ -23,4 +23,13 @@
       <ProjectReference Include="..\Dfe.Edis.SourceAdapter.Roatp.Infrastructure.RoatpWebsite\Dfe.Edis.SourceAdapter.Roatp.Infrastructure.RoatpWebsite.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="settings.job">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="run.cmd">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

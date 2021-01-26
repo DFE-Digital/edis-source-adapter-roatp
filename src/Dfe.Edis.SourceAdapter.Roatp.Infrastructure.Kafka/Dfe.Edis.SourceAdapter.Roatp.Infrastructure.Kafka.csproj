@@ -9,9 +9,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Confluent.Kafka" Version="1.5.3" />
-      <PackageReference Include="Confluent.SchemaRegistry.Serdes.Json" Version="1.5.3" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.10" />
+      <PackageReference Include="Dfe.Edis.Kafka" Version="1.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.11" />
     </ItemGroup>
 
 </Project>

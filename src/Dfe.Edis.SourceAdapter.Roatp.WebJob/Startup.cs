@@ -1,10 +1,12 @@
 using System.Net.Http;
+using Dfe.Edis.Kafka;
 using Dfe.Edis.SourceAdapter.Roatp.Application;
 using Dfe.Edis.SourceAdapter.Roatp.Domain.Configuration;
 using Dfe.Edis.SourceAdapter.Roatp.Domain.DataServicesPlatform;
 using Dfe.Edis.SourceAdapter.Roatp.Domain.Roatp;
 using Dfe.Edis.SourceAdapter.Roatp.Domain.StateManagement;
 using Dfe.Edis.SourceAdapter.Roatp.Infrastructure.AzureStorage;
+using Dfe.Edis.SourceAdapter.Roatp.Infrastructure.Kafka;
 using Dfe.Edis.SourceAdapter.Roatp.Infrastructure.Kafka.RestProxy;
 using Dfe.Edis.SourceAdapter.Roatp.Infrastructure.RoatpWebsite;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,12 +29,13 @@ namespace Dfe.Edis.SourceAdapter.Roatp.FunctionApp
                 };
 
             services.AddHttpClient();
+            services.AddKafkaProducer();
 
             AddConfiguration(services, configuration);
             AddLogging(services);
 
             AddRoatpDataSource(services);
-            AddRoatpDataReceiver(services);
+            AddRoatpDataReceiver(services, configuration);
             AddState(services);
 
             services
@@ -46,6 +49,15 @@ namespace Dfe.Edis.SourceAdapter.Roatp.FunctionApp
             services.AddSingleton(configuration.SourceData);
             services.AddSingleton(configuration.DataServicePlatform);
             services.AddSingleton(configuration.State);
+
+            services.AddSingleton(new KafkaBrokerConfiguration
+            {
+                BootstrapServers = configuration.DataServicePlatform.KafkaBootstrapServers,
+            });
+            services.AddSingleton(new KafkaSchemaRegistryConfiguration
+            {
+                BaseUrl = configuration.DataServicePlatform.SchemaRegistryUrl,
+            });
         }
 
         private void AddLogging(IServiceCollection services)
@@ -67,17 +79,24 @@ namespace Dfe.Edis.SourceAdapter.Roatp.FunctionApp
             });
         }
 
-        private void AddRoatpDataReceiver(IServiceCollection services)
+        private void AddRoatpDataReceiver(IServiceCollection services, RootAppConfiguration configuration)
         {
-            // Having issues with Typed clients with HTTP extensions. Doing this for now
-            services.AddScoped<IRoatpDataReceiver, KafkaRestProxyRoatpDataReceiver>(sp =>
+            if (!string.IsNullOrEmpty(configuration.DataServicePlatform.KafkaBootstrapServers))
             {
-                var httpClientFactory = sp.GetService<IHttpClientFactory>();
-                return new KafkaRestProxyRoatpDataReceiver(
-                    httpClientFactory.CreateClient(),
-                    sp.GetService<DataServicePlatformConfiguration>(),
-                    sp.GetService<ILogger<KafkaRestProxyRoatpDataReceiver>>());
-            });
+                services.AddScoped<IRoatpDataReceiver, KafkaRoatpDataReceiver>();
+            }
+            else
+            {
+                // Having issues with Typed clients with HTTP extensions. Doing this for now
+                services.AddScoped<IRoatpDataReceiver, KafkaRestProxyRoatpDataReceiver>(sp =>
+                {
+                    var httpClientFactory = sp.GetService<IHttpClientFactory>();
+                    return new KafkaRestProxyRoatpDataReceiver(
+                        httpClientFactory.CreateClient(),
+                        sp.GetService<DataServicePlatformConfiguration>(),
+                        sp.GetService<ILogger<KafkaRestProxyRoatpDataReceiver>>());
+                });
+            }
         }
 
         private void AddState(IServiceCollection services)

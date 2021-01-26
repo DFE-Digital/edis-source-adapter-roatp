@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Dfe.Edis.Kafka.Producer;
 using Dfe.Edis.SourceAdapter.Roatp.Domain.Configuration;
 using Dfe.Edis.SourceAdapter.Roatp.Domain.DataServicesPlatform;
 using Dfe.Edis.SourceAdapter.Roatp.Domain.Roatp;
@@ -10,13 +11,16 @@ namespace Dfe.Edis.SourceAdapter.Roatp.Infrastructure.Kafka
 {
     public class KafkaRoatpDataReceiver : IRoatpDataReceiver, IDisposable
     {
+        private readonly IKafkaProducer<string, ApprenticeshipProvider> _producer;
         private readonly DataServicePlatformConfiguration _configuration;
         private readonly ILogger<KafkaRoatpDataReceiver> _logger;
 
         public KafkaRoatpDataReceiver(
+            IKafkaProducer<string, ApprenticeshipProvider> producer,
             DataServicePlatformConfiguration configuration,
             ILogger<KafkaRoatpDataReceiver> logger)
         {
+            _producer = producer;
             _configuration = configuration;
             _logger = logger;
         }
@@ -25,16 +29,15 @@ namespace Dfe.Edis.SourceAdapter.Roatp.Infrastructure.Kafka
         {
             _logger.LogInformation("Sending {UKPRN} to Kafka topic {TopicName}",
                 provider.Ukprn, _configuration.RoatpProviderTopic);
-            
-            // var message = new Message<long, ApprenticeshipProvider>
-            // {
-            //     Key = provider.Ukprn,
-            //     Value = provider,
-            // };
-            // var result = await _producer.ProduceAsync(_configuration.RoatpProviderTopic, message, cancellationToken);
-            
-            // _logger.LogInformation("Message for {UKPRN} stored as offset {Offset} in partition {Partition} for {TopicName}",
-            //     provider.Ukprn, result.Offset, result.Partition, _configuration.RoatpProviderTopic);
+
+            var result = await _producer.ProduceAsync(
+                _configuration.RoatpProviderTopic,
+                provider.Ukprn.ToString(),
+                provider,
+                cancellationToken);
+
+            _logger.LogInformation("Message for {UKPRN} stored as offset {Offset} in partition {Partition} for {TopicName}",
+                provider.Ukprn, result.Offset, result.Partition, _configuration.RoatpProviderTopic);
         }
 
         public void Dispose()
